@@ -3,6 +3,8 @@ public:
     int maxProfit(vector<int>& prices) {
         int n = prices.size();
         vector<vector<pair<int,int>>> dp(n, vector<pair<int,int>>(3, {0,0}));
+        vector<pair<int,int>> curr(3, {0,0});
+        
         dp[n-1][1] = {0,prices[n-1]};
         dp[n-1][2] = {0,prices[n-1]};
         for (int i = n-2 ; i>= 0 ; i--) {
