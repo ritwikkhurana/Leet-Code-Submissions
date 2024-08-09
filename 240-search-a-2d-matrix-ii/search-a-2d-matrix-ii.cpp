@@ -15,7 +15,7 @@ public:
     bool searchMatrix(vector<vector<int>>& matrix, int target) {
         int n = matrix.size();
         int m = matrix[0].size();
-        int end = matrix[0].size()-1;
+        int end = m-1;
         for (int i = 0 ; i < n ; i++) {
             int val = binarySearch(matrix, target, 0, end, i);
             if (val < 0 || val >= m) return false;
