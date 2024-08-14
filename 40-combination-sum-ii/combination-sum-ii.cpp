@@ -21,8 +21,8 @@ public:
         vector<int> temp;
         sort(candidates.begin(), candidates.end());
         solve(candidates, 0, output, temp, 0, target);
-        sort(output.begin(), output.end());
-        output.erase(unique(output.begin(), output.end()), output.end());
+        // sort(output.begin(), output.end());
+        // output.erase(unique(output.begin(), output.end()), output.end());
         return output;
     }
 };
