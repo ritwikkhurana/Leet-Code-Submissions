@@ -19,6 +19,5 @@ public:
             swap(nums[i-1],nums[j]);
             sort(nums.begin() + i, nums.end());
         }
-        cout<<"I am geeky aadu, DM for doubts te nu pt main rkheya mainu vi dsdeya kr";
     }
 };
