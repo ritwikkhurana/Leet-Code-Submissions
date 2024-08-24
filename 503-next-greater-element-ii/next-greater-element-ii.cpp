@@ -4,18 +4,20 @@ public:
         int n = nums.size();
         vector<int> circ(nums);
         circ.insert(circ.end(), nums.begin(), nums.end()-1);
+        stack<int> s;
         vector<int> output;
-        for (int i = 0 ; i < n ; i++) {
-            int ele = nums[i];
-            int j;
-            for (j = i+1 ; j < circ.size() ; j++) {
-                if (circ[j] > nums[i]) {
-                    output.push_back(circ[j]);
-                    break;
+        for (int i = circ.size()-1 ; i>=0 ; i--) {
+            while (!s.empty() && s.top() <= circ[i]) s.pop();
+            if (i < n) {
+                if (s.empty()) {
+                    output.push_back(-1);
+                } else {
+                    output.push_back(s.top());
                 }
             }
-            if (j >= circ.size()) output.push_back(-1);
+            s.push(circ[i]);
         }
+        reverse(output.begin(), output.end());
         return output;
     }
 };
