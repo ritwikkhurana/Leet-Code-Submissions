@@ -1,101 +1,98 @@
 class Node {
-public:    
+public:
+    int key;
     int value;
     int freq;
     Node* left;
     Node* right;
 
-    Node(int value) {
+    Node(int key, int value) {
+        this->key = key;
         this->value = value;
-        freq = 1;
         left = NULL;
         right = NULL;
+        freq = 1;
     }
+
 };
 
 class LFUCache {
-private:
-    int capacity;
-    unordered_map<int,pair<int,Node*>> cache;
-    map<int, pair<Node*, Node*>> freqMap;
 public:
+    unordered_map<int,Node*> cache;
+    map<int, pair<Node*, Node*>> freqMap;
+    int cap;
     LFUCache(int capacity) {
-        this->capacity = capacity;
+        cap = capacity;
         cache.clear();
         freqMap.clear();
     }
 
-    void remove(Node* node, int currFreq) {
-        Node* head = freqMap[currFreq].first;
-        Node* tail = freqMap[currFreq].second;
-        if (node == head) {
-            if (tail == node) {
-                head = NULL;
-                tail = NULL;
-                freqMap.erase(currFreq);
-                node -> left = NULL;
-                node -> right = NULL;
-                return;
-            } else {
-                head = node -> right;
-                head -> left = NULL;
-            }
+    void remove(Node* node, int oldFreq) {
+        Node *head = freqMap[oldFreq].first;
+        Node *tail = freqMap[oldFreq].second;
+        if (node == head && node == tail) {
+            head = NULL;
+            tail = NULL;
+            freqMap.erase(oldFreq);
+            return;
         } else {
-            node -> left -> right = node -> right;
+            if (node != head) {
+                node -> left -> right = node -> right;
+            }
             if (node != tail) {
                 node -> right -> left = node -> left;
-            } else {
+            }
+            if (node == head) {
+                head = node -> right;
+            } else if (node == tail) {
                 tail = node -> left;
             }
         }
-         node -> left = NULL;
-         node -> right = NULL;
-         freqMap[currFreq].first = head;
-         freqMap[currFreq].second = tail;
+        node -> left = NULL;
+        node -> right = NULL;
+        freqMap[oldFreq] = {head,tail};
     }
 
     void add(Node* node, int newFreq) {
         if (freqMap.find(newFreq) == freqMap.end()) {
             freqMap[newFreq] = {node, node};
-            return;
+        } else {
+            Node* head = freqMap[newFreq].first;
+            node -> right = head;
+            head -> left = node;
+            head = node;
+            freqMap[newFreq].first = head;
         }
-        Node* head = freqMap[newFreq].first;
-        Node* tail = freqMap[newFreq].second;
-        node -> right = head;
-        head -> left = node;
-        head = node;
-        freqMap[newFreq].first = head;
-        freqMap[newFreq].second = tail;
     }
-    
+
     void updatePos(Node* node) {
-        int currFreq = node->freq;
+        int oldFreq = node->freq;
         node->freq++;
-        remove(node, currFreq);
+        remove(node, oldFreq);
         add(node, node->freq);
     }
-
-
+    
     int get(int key) {
         if (cache.find(key) == cache.end()) return -1;
-        Node* currNode = cache[key].second;
-        updatePos(currNode);
-        return cache[key].first;
+        Node* node = cache[key];
+        updatePos(node);
+        return node->value;
     }
     
     void put(int key, int value) {
         if (cache.find(key) != cache.end()) {
-            cache[key].first = value;
-            updatePos(cache[key].second);
+            Node* node = cache[key];
+            node->value = value;
+            updatePos(node);
         } else {
-            if (cache.size() == capacity) {
-                auto lfu = freqMap.begin();
-                cache.erase(lfu->second.second->value);
-                remove(lfu->second.second, lfu->second.second->freq);
+            if (cache.size() == cap) {
+                Node* node = freqMap.begin()->second.second;
+                cache.erase(node->key);
+                remove(node, node->freq);
             }
-            Node* newNode = new Node(key);
-            cache[key] = {value, newNode};
-            add(newNode, 1);
+            Node* newNode = new Node(key, value);
+            cache[key] = newNode;
+            add(newNode, 1); 
         }
     }
 };
