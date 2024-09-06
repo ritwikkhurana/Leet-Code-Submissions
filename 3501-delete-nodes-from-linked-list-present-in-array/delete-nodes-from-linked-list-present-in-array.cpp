@@ -11,23 +11,24 @@
 class Solution {
 public:
     ListNode* modifiedList(vector<int>& nums, ListNode* head) {
-        unordered_set<int> s;
-        for (int i: nums) {
-            s.insert(i);
-        }
-        ListNode *prev=NULL,*curr=head;
-        while (curr) {
-            if (s.find(curr->val) != s.end()) {
-                if (prev==NULL) {
-                    curr = curr -> next;
-                    head = curr;
+        unordered_set<int> val;
+        for (int i: nums) val.insert(i);
+        ListNode* temp=head;
+        ListNode* prev = NULL;
+        while (temp) {
+            if (val.find(temp->val) != val.end()) {
+                if (prev) {
+                    prev->next = temp->next;
+                    temp->next = NULL;
+                    temp = prev->next;
                 } else {
-                    prev -> next = curr -> next;
-                    curr = curr -> next;
+                    head = temp->next;
+                    temp->next = NULL;
+                    temp = head;
                 }
             } else {
-                prev = curr;
-                curr = curr -> next;
+                prev = temp;
+                temp = temp->next;
             }
         }
         return head;
