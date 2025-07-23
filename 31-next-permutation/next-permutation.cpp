@@ -2,7 +2,6 @@ class Solution {
 public:
     void nextPermutation(vector<int>& nums) {
         int n = nums.size();
-        if (n == 1) return;
         int i = n-1;
         while (i > 0) {
             if (nums[i-1] < nums[i]) break;
@@ -16,8 +15,10 @@ public:
                 if (nums[j] > nums[i-1]) break;
                 j--;
             }
-            swap(nums[i-1],nums[j]);
+            swap(nums[i-1], nums[j]);
             sort(nums.begin() + i, nums.end());
         }
+
+
     }
 };
