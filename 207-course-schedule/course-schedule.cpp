@@ -22,7 +22,6 @@ public:
                 if (inDeg[i] == 0) q.push(i);
             }
         }
-        if (!q.empty()) return false;
 
         for (int i = 0 ; i < numCourses ; i++) {
             if (inDeg[i] != 0) return false;
