@@ -1,18 +1,25 @@
+class Desc {
+public:
+    bool operator() (int a, int b) const {
+        return a > b;
+    }
+};
+
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-        map<int,int> ourmap;
+        map<int,int, Desc> m;
         int n = nums.size();
         vector<int> output;
         for (int i = 0 ; i < k ; i++) {
-            ourmap[nums[i]]++;
+            m[nums[i]]++;
         }
-        output.push_back(ourmap.rbegin()->first);
+        output.push_back(m.begin() -> first);
         for (int i = k ; i < n ; i++) {
-            ourmap[nums[i]]++;
-            ourmap[nums[i-k]]--;
-            if (ourmap[nums[i-k]] == 0) ourmap.erase(nums[i-k]);
-            output.push_back(ourmap.rbegin()->first);
+            m[nums[i-k]]--;
+            if (m[nums[i-k]] == 0) m.erase(nums[i-k]);
+            m[nums[i]]++;
+            output.push_back(m.begin() -> first);
         }
         return output;
     }
