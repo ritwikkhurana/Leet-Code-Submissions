@@ -1,52 +1,38 @@
-class Node{
+class Node {
 public:
-    int key;
-    int val;
-    Node *left;
-    Node *right;
 
-    Node(int key, int val) {
-        this->key = key;
-        this->val = val;
-        left = NULL;
-        right = NULL;
+    int key;
+    int value;
+    Node* left;
+    Node* right;
+
+    Node(int key, int value) {
+        this -> key = key;
+        this -> value = value;
+        this -> left = NULL;
+        this -> right = NULL;
     }
 };
 
+
 class LRUCache {
-public:
-    unordered_map<int,Node*> cache;
     int cap;
+    unordered_map<int, Node*> ourmap;
     Node* head;
     Node* tail;
-    LRUCache(int capacity) {
-        cap = capacity;
-        head = NULL;
-        tail = NULL;
-        cache.clear();
-    }
 
-    void updatePos(Node* node) {
-        if (node != head) {
-            node -> left -> right = node -> right;
-            if (node == tail) {
-                tail = node -> left;
-            } else {
-                node -> right -> left = node -> left;
-            }
-            node -> left = NULL;
-            add(node);
-        }
-    }
-    
-    void remove() {
-        if (head == tail) {
-            head = NULL;
-            tail = NULL;
+    void remove(Node* node) {
+        if (head == node) {
+            head = node -> right;
+            if (tail == node) tail = NULL;
+        } else if (tail == node) {
+            tail = node -> left;
         } else {
-            tail -> left -> right = NULL;
-            tail = tail -> left;
+            node -> left -> right = node -> right;
+            node -> right -> left = node -> left;
         }
+        node -> left = NULL;
+        node -> right = NULL;
     }
 
     void add(Node* node) {
@@ -60,25 +46,38 @@ public:
         }
     }
 
+    void updatePos(Node* node) {
+        remove(node);
+        add(node);
+    }
+    
+public:
+
+    LRUCache(int capacity) {
+        this -> cap = capacity;
+        head = NULL;
+        tail = NULL;
+        ourmap.clear();
+    }
+
     int get(int key) {
-        if (cache.find(key) == cache.end()) return -1;
-        Node* node = cache[key];
-        updatePos(node);
-        return cache[key]->val;
+        if (ourmap.find(key) == ourmap.end()) return -1;
+        int val = ourmap[key] -> value;
+        updatePos(ourmap[key]);
+        return val;
     }
     
     void put(int key, int value) {
-        if (cache.find(key) != cache.end()) {
-            Node* node = cache[key];
-            node->val = value;
-            updatePos(node);
+        if (ourmap.find(key) != ourmap.end()) {
+            ourmap[key] -> value = value;
+            updatePos(ourmap[key]);
         } else {
-            if (cache.size() == cap) {
-                cache.erase(tail->key);
-                remove();
+            if (ourmap.size() == this -> cap) {
+                ourmap.erase(tail -> key);
+                remove(tail);
             }
             Node* newNode = new Node(key, value);
-            cache[key] = newNode;
+            ourmap[key] = newNode;
             add(newNode);
         }
     }
@@ -86,7 +85,7 @@ public:
 
 /**
  * Your LRUCache object will be instantiated and called as such:
- * LRUCache* obj = new LRUCache(capacity);
- * int param_1 = obj->get(key);
- * obj->put(key,value);
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
  */
