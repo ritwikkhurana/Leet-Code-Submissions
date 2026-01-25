@@ -2,13 +2,16 @@ class Solution {
 public:
     int maxProfit(int k, vector<int>& prices) {
         int n = prices.size();
-        vector<vector<pair<int,int>>> dp(n+1, vector<pair<int,int>>(k+1, {0,0}));
-        for (int i = 1 ; i <= n; i++) {
+        vector<vector<int>> curr(k+1, vector<int>(2, 0));
+        vector<vector<int>> prev(k+1, vector<int>(2, 0));
+
+        for (int i = n-1 ; i>=0 ; i--) {
             for (int j = 1 ; j <= k ; j++) {
-                dp[i][j].first = max(dp[i-1][j].first, -prices[n-i] + dp[i-1][j].second);
-                dp[i][j].second = max(dp[i-1][j].second, prices[n-i] + dp[i-1][j-1].first);
+                curr[j][0] = max(-prices[i] + prev[j][1], prev[j][0]);
+                curr[j][1] = max(prices[i] + prev[j-1][0], prev[j][1]);
+                prev = curr;
             }
         }
-        return dp[n][k].first;
+        return curr[k][0];
     }
 };
