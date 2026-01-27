@@ -3,25 +3,24 @@ public:
     int maximalSquare(vector<vector<char>>& matrix) {
          int n = matrix.size();
          int m = matrix[0].size();
+         int maxSize = 0;
          vector<vector<int>> dp(n, vector<int>(m, 0));
          for (int i = 0 ; i < n ; i++) {
-            for (int j = 0 ; j < m ; j++) {
-                if (matrix[i][j] == '0') continue;
-                int left = j>0 ? dp[i][j-1] : 0;
-                int up = i>0 ? dp[i-1][j] : 0;
-                int diag = (i>0 && j>0) ? dp[i-1][j-1] : 0;
-                if (left >= 1 && up >=1 && diag >=1 ) {
-                    dp[i][j] = 1 + min(left,min(up,diag));
-                } else {
-                    dp[i][j] = 1;
+            dp[i][0] = matrix[i][0] - '0';
+            maxSize = max(maxSize, dp[i][0]);
+         }
+        for (int i = 0 ; i < m ; i++) {
+            dp[0][i] = matrix[0][i] - '0';
+            maxSize = max(maxSize, dp[0][i]);
+        }
+         for (int i = 1 ; i < n ; i++) {
+            for (int j = 1 ; j < m ; j++) {
+                if (matrix[i][j] == '1') {
+                    dp[i][j] = 1 + min(dp[i-1][j-1], min(dp[i-1][j], dp[i][j-1]));
+                    maxSize = max(maxSize, dp[i][j]);
                 }
             }
          }
-         int maxArea = 0;
-         for (int i = 0 ; i < n ; i++) {
-           int maxRow = *max_element(dp[i].begin(), dp[i].end());
-           maxArea = max(maxArea,maxRow);
-         }
-         return maxArea*maxArea;
+         return maxSize*maxSize;
     }
 };
